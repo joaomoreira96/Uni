@@ -3,3 +3,4 @@ easyxlsx
 xlsxreporter
 pandas
 numpy
+haversine

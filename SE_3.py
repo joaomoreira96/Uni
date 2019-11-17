@@ -30,7 +30,7 @@ def main():
 	for i in range(0, len(tlist)):
 		if i >= 1:
 			t_notation = '%H:%M:%S'
-			print(f"Time taken from last point {time.strptime(tlist[i], t_notation) - time.strptime(tlist[i - 1], t_notation)}")
+			print(f"Time taken from last point {time.mktime(time.strptime(tlist[i], t_notation)) - time.mktime(time.strptime(tlist[i - 1], t_notation))}")
 		else:
 			print(f"First point at: {tlist[i]} hours")
 	# tt
