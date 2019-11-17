@@ -5,6 +5,7 @@ import time
 # imports for exel writing
 import xlsxwriter
 import easyxlsx, xlsxreporter
+from xlwt import Workbook 
 # Pandas is good for data related stuff but more in the area of data science
 import pandas as pd
 import numpy as np
@@ -65,6 +66,23 @@ def main():
 	writer("velocityText.txt", vmsl)
 	writer("khText.txt", vkmhl)
 
+	wb = Workbook() 
+	sheet1 = wb.add_sheet('Sheet 1') 
+	sheet1.write(0, 1, 'tempo entre ponto e ponto') 
+	sheet1.write(0, 2, 'distancia entre dois pontos') 
+	sheet1.write(0, 3, 'velocidade de deslocação') 
+	sheet1.write(0, 4, 'meio de transporte utilizado') 
+	sheet1.write(0, 5, 'distância total percorrida') 
+	sheet1.write(0, 6, 'tempo total gasto')
+
+	ii = 0
+
+	while ii <= 1775:
+		sheet1.write(1, tdlist[ii])
+		ii += 1
+	
+
+	wb.save('trabalhoFinal.xls') 
 
 if __name__ == '__main__':
 	try:
