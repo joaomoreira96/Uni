@@ -8,6 +8,8 @@ import easyxlsx, xlsxreporter
 # Pandas is good for data related stuff but more in the area of data science
 import pandas as pd
 import numpy as np
+# haversine module
+from haversine import haversine, Unit
 # you can use this instead of pandas to open and read csv (and it's in python std lib!)
 import csv  # https://docs.python.org/3/library/csv.html
 
@@ -16,25 +18,46 @@ def csvOpener(pfile):
 	return csv.reader(open(pfile, newline=''))
 
 
+def writer(pfile, content):
+	with open(pfile, 'w+') as fileOut:
+		for l in content:
+			fileOut.write(f"{l}\n")
+
+
 def main():
 	# some variables
 	tlist = []  # given that the day is the same only the time will change so only one dimension
+	tdlist = []
+	posl = []  # position list [(lat, lon)]
+	dposl = []  # delta distance
+	td = 0.0  # total distance
+	t_notation = '%H:%M:%S'  # The used time notation
 	#
 	csvRead = csvOpener('20081026094426.csv')
 	for row in csvRead:
 		if len(row) == 7:
 			tlist.append(row[-1])
+			posl.append((float(row[0]), float(row[1])))
 	# the csv file is []
 
 	# dt from p2p
 	for i in range(0, len(tlist)):
 		if i >= 1:
-			t_notation = '%H:%M:%S'
-			print(f"Time taken from last point {time.mktime(time.strptime(tlist[i], t_notation)) - time.mktime(time.strptime(tlist[i - 1], t_notation))}")
-		else:
-			print(f"First point at: {tlist[i]} hours")
+			_td = time.mktime(time.strptime(tlist[i], t_notation)) - time.mktime(time.strptime(tlist[i - 1], t_notation))
+			tdlist.append(_td)
 	# tt
-	print(tlist[1])
+	tt = time.mktime(time.strptime(tlist[-1], t_notation)) - time.mktime(time.strptime(tlist[0], t_notation))
+	for i in range(1, len(posl)):
+		dposl.append(haversine(posl[i], posl[i - 1], unit=Unit.METERS))
+	# td
+	for d in dposl:
+		td += d
+
+	print(f"Total time taken:\n\t {tt} seconds\n\t {tt / 60} minutes\n\t {tt / 3600} hours")  # This is for testing
+	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")
+	# text writers(only while xlsx is not being written)
+	writer("timeTest.txt", tdlist)
+	writer('distanceText.txt', dposl)
 
 
 if __name__ == '__main__':
