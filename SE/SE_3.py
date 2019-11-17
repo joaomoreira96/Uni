@@ -26,19 +26,20 @@ def writer(pfile, content):
 
 def main():
 	# some variables
-	tlist = []  # given that the day is the same only the time will change so only one dimension
-	tdlist = []
+	tlist = []  # time list
+	tdlist = []  # time delta list
 	posl = []  # position list [(lat, lon)]
 	dposl = []  # delta distance
 	td = 0.0  # total distance
+	vmsl = []  # m/s velocity
+	vkmhl = []  # km/h velocity
 	t_notation = '%H:%M:%S'  # The used time notation
-	#
+	# csv opening and parsing
 	csvRead = csvOpener('20081026094426.csv')
 	for row in csvRead:
 		if len(row) == 7:
 			tlist.append(row[-1])
 			posl.append((float(row[0]), float(row[1])))
-	# the csv file is []
 
 	# dt from p2p
 	for i in range(0, len(tlist)):
@@ -52,12 +53,17 @@ def main():
 	# td
 	for d in dposl:
 		td += d
-
+	# v
+	for i in range(0, 1775):
+		vmsl.append(dposl[i] / tdlist[i])
+		vkmhl.append(float(dposl[i] / tdlist[i]) * 3.6)
 	print(f"Total time taken:\n\t {tt} seconds\n\t {tt / 60} minutes\n\t {tt / 3600} hours")  # This is for testing
-	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")
-	# text writers(only while xlsx is not being written)
-	writer("timeTest.txt", tdlist)
-	writer('distanceText.txt', dposl)
+	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")  # This is for testing
+	# text writers(only while xlsx is not being written
+	writer("timeTest.txt", tdlist)  # This is for testing
+	writer('distanceText.txt', dposl)  # This is for testing
+	writer("velocityText.txt", vmsl)
+	writer("khText.txt", vkmhl)
 
 
 if __name__ == '__main__':
