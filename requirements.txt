@@ -1,1 +1,5 @@
 xlsxwriter
+easyxlsx
+xlsxreporter
+pandas
+numpy

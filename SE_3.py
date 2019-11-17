@@ -28,7 +28,7 @@ def main():
 
 	# dt from p2p
 	for i in range(0, len(tlist)):
-		if i > 0:
+		if i >= 1:
 			t_notation = '%H:%M:%S'
 			print(f"Time taken from last point {time.strptime(tlist[i], t_notation) - time.strptime(tlist[i - 1], t_notation)}")
 		else:
