@@ -5,6 +5,9 @@ import time
 # imports for exel writing
 import xlsxwriter
 import easyxlsx, xlsxreporter
+
+from openpyxl import Workbook
+
 from xlwt import Workbook 
 # Pandas is good for data related stuff but more in the area of data science
 import pandas as pd
@@ -35,6 +38,7 @@ def main():
 	vmsl = []  # m/s velocity
 	vkmhl = []  # km/h velocity
 	t_notation = '%H:%M:%S'  # The used time notation
+	wb = Workbook()
 	# csv opening and parsing
 	csvRead = csvOpener('20081026094426.csv')
 	for row in csvRead:
@@ -65,24 +69,26 @@ def main():
 	writer('distanceText.txt', dposl)  # This is for testing
 	writer("velocityText.txt", vmsl)
 	writer("khText.txt", vkmhl)
-
-	wb = Workbook() 
-	sheet1 = wb.add_sheet('Sheet 1') 
-	sheet1.write(0, 1, 'tempo entre ponto e ponto') 
-	sheet1.write(0, 2, 'distancia entre dois pontos') 
-	sheet1.write(0, 3, 'velocidade de deslocação') 
-	sheet1.write(0, 4, 'meio de transporte utilizado') 
-	sheet1.write(0, 5, 'distância total percorrida') 
-	sheet1.write(0, 6, 'tempo total gasto')
-
-	ii = 0
-
-	while ii <= 1775:
-		sheet1.write(1, tdlist[ii])
-		ii += 1
 	
+	workbook = xlsxwriter.Workbook('trabalhofinal.xlsx') 
 
-	wb.save('trabalhoFinal.xls') 
+	worksheet = workbook.add_worksheet()
+
+	worksheet.write('A1', 'tempo entre ponto e ponto') 
+	worksheet.write('B1', 'distancia entre dois pontos') 
+	worksheet.write('C1', 'velocidade de deslocação') 
+	worksheet.write('D1', 'meio de transporte utilizade') 
+	worksheet.write('E1', 'distância total percorrida') 
+	worksheet.write('F1', 'tempo total gasto') 
+
+	for i in range(0, 1775):
+		worksheet.write(2, 0, tdlist[i]) 
+		
+		row +=1 
+	  
+	
+	workbook.close() 
+
 
 if __name__ == '__main__':
 	try:
