@@ -5,7 +5,7 @@ import time
 # imports for exel writing
 import xlsxwriter
 import easyxlsx, xlsxreporter
-
+  
 from openpyxl import Workbook
 
 from xlwt import Workbook 
@@ -38,7 +38,6 @@ def main():
 	vmsl = []  # m/s velocity
 	vkmhl = []  # km/h velocity
 	t_notation = '%H:%M:%S'  # The used time notation
-	wb = Workbook()
 	# csv opening and parsing
 	csvRead = csvOpener('20081026094426.csv')
 	for row in csvRead:
@@ -69,26 +68,41 @@ def main():
 	writer('distanceText.txt', dposl)  # This is for testing
 	writer("velocityText.txt", vmsl)
 	writer("khText.txt", vkmhl)
-	
+
 	workbook = xlsxwriter.Workbook('trabalhofinal.xlsx') 
 
 	worksheet = workbook.add_worksheet()
 
-	worksheet.write('A1', 'tempo entre ponto e ponto') 
-	worksheet.write('B1', 'distancia entre dois pontos') 
-	worksheet.write('C1', 'velocidade de deslocação') 
+	worksheet.write('A1', 'tempo entre ponto e ponto, segundos') 
+	worksheet.write('B1', 'distancia entre dois pontos, metros') 
+	worksheet.write('C1', 'velocidade de deslocação, kilometros') 
 	worksheet.write('D1', 'meio de transporte utilizade') 
-	worksheet.write('E1', 'distância total percorrida') 
-	worksheet.write('F1', 'tempo total gasto') 
+	worksheet.write('E1', 'distância total percorrida, metros') 
+	worksheet.write('F1', 'tempo total gasto, segundos') 
+	worksheet.write('E3', td )
+	worksheet.write('F3', tt )
+
+	#t = []
+	#for i in range(0, len(vkmhl)):
+	#	if round(vkmhl[i]) == 0:
+	#		t.append('Parado')
+	#	if vkmhl[i] <= 5:
+	#	    t.append("andar/correr")
+	#	if vkmhl[i] > 5:
+	#		t.append("carro/transporte publico/sprint")
+	#return t
+
+
 
 	for i in range(0, 1775):
-		worksheet.write(2, 0, tdlist[i]) 
+		worksheet.write(i+2, 0 , tdlist[i]) 
+		worksheet.write(i+2, 1, dposl[i])
+		worksheet.write(i+2, 2, vkmhl[i])
+		#worksheet.write(i+2, 3, t[i])
 		
-		row +=1 
-	  
-	
 	workbook.close() 
 
+	
 
 if __name__ == '__main__':
 	try:
