@@ -16,6 +16,7 @@ import numpy as np
 from haversine import haversine, Unit
 # you can use this instead of pandas to open and read csv (and it's in python std lib!)
 import csv  # https://docs.python.org/3/library/csv.html
+import os
 
 
 def csvOpener(pfile):
@@ -27,6 +28,61 @@ def writer(pfile, content):
 		for l in content:
 			fileOut.write(f"{l}\n")
 
+def menu():
+    print("************MAIN MENU**************")
+
+    print()
+
+    choice = input("""
+                      A: Escolha o ficheiro a analisar
+                      B: View Student details
+                      C: Search by ID number
+                      D: Produce Reports
+                      Q: Quit/Log Out
+
+                      Please enter your choice: """)
+
+    if choice == "A" or choice =="a":
+    	menu1()
+    elif choice == "B" or choice =="b":
+    	menu2()
+    elif choice == "C" or choice =="c":
+    	menu3()
+    elif choice=="D" or choice=="d":
+    	menu4()
+    elif choice=="Q" or choice=="q":
+        sys.exit
+    else:
+        print("You must only select either A,B,C, or D.")
+        print("Please try again")
+    menu()
+
+
+def menu1():	
+	arr = [f for f in os.listdir('.') if os.path.isfile(os.path.join('.', f)) and f.endswith('.csv')]
+	print(arr)
+
+	#t = ""
+	#for i in range(0, len(arr)):
+	#	t += (arr[i])
+		
+		
+	#	for a in range(0, i):
+	#		print(i, " : ", t, "\n")	
+
+	for i, frase in enumerate(arr):
+		arr[i] = frase[0].split()
+
+	print(arr)
+
+def menu2():
+	print("menu2")
+
+def menu3():
+	print("menu3")
+
+def menu4():
+	print("menu4")
 
 def main():
 	# some variables
@@ -106,6 +162,7 @@ def main():
 
 if __name__ == '__main__':
 	try:
+		menu()
 		main()
 	except Exception as e:
 		print(e)
