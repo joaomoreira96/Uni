@@ -9,7 +9,6 @@ from haversine import haversine, Unit
 # you can use this instead of pandas to open and read csv (and it's in python std lib!)
 from csv import reader  # https://docs.python.org/3/library/csv.html
 import os, sys
-# optimize cpu time and memory usage by specifing the imports(functions and classes instead of the full bloated modules)
 
 # import easyxlsx, xlsxreporter
 # from openpyxl import Workbook
@@ -23,13 +22,15 @@ def csvOpener(pfile):
 	return reader(open(pfile, newline=''))
 
 
-def csvParser(f):
+def csvParser(f, indexList=[0, 1, -1]):
 	# Use a dictionary for storing the different arrays in the future
-	parsed_dict = {'posl': [], tlist: []}
+	# the indexList is a list with the wanted indexes to be parsed
+	parsed_dict = {'posl': [], 'tlist': []}
 	for row in f:
 		if len(row) == 7:
-			tlist.append(row[-1])
-			posl.append((float(row[0]), float(row[1])))
+			# if altitude and date is to be processed it starts here
+			parsed_dict['tlist'].append(row[indexList[-1]])
+			parsed_dict['posl'].append((float(row[indexList[0]]), float(row[indexList[1]])))  # position list is a list of tuples containing longitute and latitude
 	return parsed_dict
 
 
@@ -37,12 +38,20 @@ def totalDistance(dposl):
 	td = 0
 	for d in dposl:
 		td += d
+	return td
 
 
-def writer(pfile, content):
-	with open(pfile, 'w+') as fileOut:
-		for l in content:
-			fileOut.write(f"{l}\n")
+def totalTime(tlist, t_notation='%H:%M:%S'):
+	return time.mktime(time.strptime(tlist[-1], t_notation)) - time.mktime(time.strptime(tlist[0], t_notation))
+
+
+def velocityCounter(dposl, tdlist):
+	vmsl = []
+	vkmhl = []
+	for i in range(0, 1775):
+		vmsl.append(dposl[i] / tdlist[i])
+		vkmhl.append(float(dposl[i] / tdlist[i]) * 3.6)
+	return vmsl, vkmhl
 
 
 def haversineList(posl):
@@ -59,10 +68,6 @@ def dtp2p(tlist, t_notation='%H:%M:%S'):  # delta time from p2p
 			_td = time.mktime(time.strptime(tlist[i], t_notation)) - time.mktime(time.strptime(tlist[i - 1], t_notation))
 			tdlist.append(_td)
 	return tdlist
-
-
-def totalTime(tlist, t_notation='%H:%M:%S'):
-	return time.mktime(time.strptime(tlist[-1], t_notation)) - time.mktime(time.strptime(tlist[0], t_notation))
 
 
 def transportationDetection(vl):
@@ -88,48 +93,22 @@ def argsParser():
 		argList = []
 		for arg in sys.argv[1:]:
 			pass
-			# File can be accepted, 
+			# File can be accepted
+			# use a flag -d to use default values (about the data columns)
 		return argList
 	except Exception as e:
 		print(e)
 
 
-def main():
-	# some variables  # For now this variables will be globals while this is still being developed
-	tlist = []  # time list
-	tdlist = []  # time delta list
-	posl = []  # position list [(lat, lon)]
-	dposl = []  # delta distance
-	td = 0.0  # total distance
-	vmsl = []  # m/s velocity
-	vkmhl = []  # km/h velocity
-	t_notation = '%H:%M:%S'  # The used time notation
-	PFILE = '20081026094426.csv'
-	# csv opening and parsing
-	csvRead = csvOpener(PFILE)
+def writer(pfile, content):  # to be removed this was for testing only
+	with open(pfile, 'w+') as fileOut:
+		for l in content:
+			fileOut.write(f"{l}\n")
 
-	# haversine distance
-	dposl = haversineList(posl)
 
-	# td
-	td = totalDistance(dposl)
-	# tt TotalTime
-	tt = totalTime(tlist)
-	# v
-	for i in range(0, 1775):
-		vmsl.append(dposl[i] / tdlist[i])
-		vkmhl.append(float(dposl[i] / tdlist[i]) * 3.6)
-	print(f"Total time taken:\n\t {tt} seconds\n\t {tt / 60} minutes\n\t {tt / 3600} hours")  # This is for testing
-	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")  # This is for testing
-	# text writers(only while xlsx is not being written
-	# writer("timeTest.txt", tdlist)  # This is for testing
-	# writer('distanceText.txt', dposl)  # This is for testing
-	# writer("velocityText.txt", vmsl)
-	# writer("khText.txt", vkmhl)
-
-	workbook = xlsxwriter.Workbook('trabalhofinal.xlsx')
+def workbookWriter(td, tt, tdlist, dposl, vkmhl, pName='trabalhofinal.xlsx'):
+	workbook = xlsxwriter.Workbook(pName)
 	worksheet = workbook.add_worksheet()
-
 	worksheet.write('A1', 'tempo entre ponto e ponto, segundos')
 	worksheet.write('B1', 'distancia entre dois pontos, metros')
 	worksheet.write('C1', 'velocidade de deslocação, kilometros')
@@ -138,40 +117,46 @@ def main():
 	worksheet.write('F1', 'tempo total gasto, segundos')
 	worksheet.write('E3', td)
 	worksheet.write('F3', tt)
-
 	for i in range(0, 1775):
 		worksheet.write(i + 2, 0, tdlist[i])
 		worksheet.write(i + 2, 1, dposl[i])
 		worksheet.write(i + 2, 2, vkmhl[i])
 		# worksheet.write(i+2, 3, t[i])
 	workbook.close()
+	print(f"The report is in: {pName}")
 
-	print("************MAIN MENU**************")
-	choice = input("""
-\t\t1/A: Escolha o ficheiro a analisar
-\t\t\t2/B: View Student details
-\t\t\t3/C: Search by ID number
-\t\t\t4/D: Produce Reports
-\t\t\t5/Q: Quit menu
-\t\t\t6/Please enter your choice: """)
-	if choice == "A" or choice == "a" or choice == 1:
-		PFILE = input('Insira o nome/caminho do ficheiro: ')
-		if os.path.isfile(PFILE):
-			PFILE = PFILE
-	elif choice == "B" or choice == "b" or choice == 2:
-		pass
-	elif choice == "C" or choice == "c" or choice == 3:
-		pass
-	elif choice == "D" or choice == "d" or choice == 4:
-		pass
-	elif choice == "Q" or choice == "q" or choice == 'quit' or choice == 'Quit' or choice == "exit" or choice == 5:
-		sys.exit()
-	else:
-		print("You must only select either A,B,C, or D.\nPlease try again.")
+
+def main(PFILE):
+	t_notation = '%H:%M:%S'  # The used time notation
+	# csv opening and parsing
+	# csvRead = csvOpener(PFILE)
+	# parsed dict
+	# dparsed = csvParser(csvRead)
+	dparsed = csvParser(csvOpener(PFILE))
+	# dparsed is the return dict from csvParse()
+
+	# haversine distance
+	dposl = haversineList(dparsed['posl'])
+	# delta time from p2p
+	tdlist = dtp2p(dparsed['tlist'])
+
+	# td
+	td = totalDistance(dposl)
+	# tt TotalTime
+	tt = totalTime(dparsed['tlist'])
+	# v
+	vmsl, vkmhl = velocityCounter(dposl, tdlist)
+	print(f"Total time taken:\n\t {tt} seconds\n\t {tt / 60} minutes\n\t {tt / 3600} hours")  # This is for testing
+	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")  # This is for testing
+
+	# text writers(only while xlsx is not being written
+	# writer("timeTest.txt", tdlist)  # This is for testing
+	# writer('distanceText.txt', dposl)  # This is for testing
+	# writer("velocityText.txt", vmsl)
+	# writer("khText.txt", vkmhl)
+
+	workbookWriter(td, tt, tdlist, dposl, vkmhl)
 
 
 if __name__ == '__main__':
-	try:
-		main()
-	except Exception as e:
-		print(e)
+	main('20081026094426.csv')
