@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/python
 # lib for date and time ops
 # import datetime
 import time
@@ -22,15 +22,12 @@ def csvOpener(pfile):
 	return reader(open(pfile, newline=''))
 
 
-def csvParser(f, indexList=[0, 1, -1]):
-	# Use a dictionary for storing the different arrays in the future
-	# the indexList is a list with the wanted indexes to be parsed
-	parsed_dict = {'posl': [], 'tlist': []}
+def csvParser(f, parsed_dict={'posl': [], 'tlist': []}, indexList=[0, 1, -1]):
 	for row in f:
 		if len(row) == 7:
-			# if altitude and date is to be processed it starts here
 			parsed_dict['tlist'].append(row[indexList[-1]])
 			parsed_dict['posl'].append((float(row[indexList[0]]), float(row[indexList[1]])))  # position list is a list of tuples containing longitute and latitude
+			# parsed_dict['dlist'].append()  # If time is to be process
 	return parsed_dict
 
 
@@ -48,7 +45,7 @@ def totalTime(tlist, t_notation='%H:%M:%S'):
 def velocityCounter(dposl, tdlist):
 	vmsl = []
 	vkmhl = []
-	for i in range(0, 1775):
+	for i in range(0, len(tdlist)):
 		vmsl.append(dposl[i] / tdlist[i])
 		vkmhl.append(float(dposl[i] / tdlist[i]) * 3.6)
 	return vmsl, vkmhl
@@ -88,18 +85,6 @@ def csvFinder(pathStr):
 	return [os.path.join(root, f) for root, subdirs, files in os.walk(pathStr) for f in files if os.path.isfile(f) and f.endswith('.csv')]
 
 
-def argsParser():
-	try:
-		argList = []
-		for arg in sys.argv[1:]:
-			pass
-			# File can be accepted
-			# use a flag -d to use default values (about the data columns)
-		return argList
-	except Exception as e:
-		print(e)
-
-
 def writer(pfile, content):  # to be removed this was for testing only
 	with open(pfile, 'w+') as fileOut:
 		for l in content:
@@ -127,6 +112,7 @@ def workbookWriter(td, tt, tdlist, dposl, vkmhl, pName='trabalhofinal.xlsx'):
 
 
 def main(PFILE):
+	# The main function of the module call this with a csv to parse
 	t_notation = '%H:%M:%S'  # The used time notation
 	# csv opening and parsing
 	# csvRead = csvOpener(PFILE)
