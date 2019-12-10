@@ -25,7 +25,7 @@ def csvOpener(pfile):
 def csvParser(f, parsed_dict={'posl': [], 'tlist': []}, indexList=[0, 1, -1]):
 	for row in f:
 		if len(row) == 7:
-			parsed_dict['tlist'].append(row[indexList[-1]])
+			parsed_dict['tlist'].append(row[int(indexList[-1])])
 			parsed_dict['posl'].append((float(row[indexList[0]]), float(row[indexList[1]])))  # position list is a list of tuples containing longitute and latitude
 			# parsed_dict['dlist'].append()  # If time is to be process
 	return parsed_dict

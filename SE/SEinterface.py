@@ -44,9 +44,9 @@ def argsParser():
 		print(e)
 
 
-def main(PFILE, indexList=[0, 1, -1]):
+def main(PFILE, indexList=[int(0), int(1), int(-1)]):
 	# run the functions from SE_3 cause code reusage(*****)
-	dparsed = SE_3.csvParser(SE_3.csvOpener(PFILE), indexList)
+	dparsed = SE_3.csvParser(SE_3.csvOpener(PFILE), indexList=indexList)
 	dposl = SE_3.haversineList(dparsed['posl'])
 	tdlist = SE_3.dtp2p(dparsed['tlist'])
 	td = SE_3.totalDistance(dposl)
@@ -58,26 +58,27 @@ def main(PFILE, indexList=[0, 1, -1]):
 
 def menu():
 	indexList = [0, 1, -1]
-	argsList = argsParser()
+	# argsList = argsParser()
 	while True:
 		print("************MAIN MENU**************")
 		choice = input("""
-	\t\t1/A: Insert the filename/path
+	\t\t\t1/A: Insert the filename/path
 	\t\t\t2/B: The index of the analised data
-	\t\t\t3/C: The ammount of lines to ignore(Not implemented)\n(The way its implemented it only analyzes 7 dimentional lines)
+	\t\t\t3/C: The ammount of lines to ignore(Not implemented)\n\t\t\t\t(The way its implemented it only analyzes 7 dimentional lines)
 	\t\t\t4/D: Produce Reports(skip input and run with default values)
 	\t\t\t5/E: In which line is the header(Not implemented)
 	\t\t\t6/Q: Quit menu
-	\t\t\tPlease enter your choice: """)
-		if choice == "A" or choice == "a" or choice == 1:
+	\t\tPlease enter your choice: """)
+		if choice == "A" or choice == "a" or choice == "1":
 			PFILE = getFile()
-		elif choice == "B" or choice == "b" or choice == 2:
+		elif choice == "B" or choice == "b" or choice == "2":
 			indexList = getIndexList()
-		elif choice == "C" or choice == "c" or choice == 3:
+		elif choice == "C" or choice == "c" or choice == "3":
 			pass
 			# ignore this option the code does this on its own
-		elif choice == "D" or choice == "d" or choice == 4:
+		elif choice == "D" or choice == "d" or choice == "4":
 			main(PFILE, indexList)
+			sys.exit(0)
 		elif choice == "Q" or choice == "q" or choice == 'quit' or choice == 'Quit' or choice == "exit" or choice == 5:
 			sys.exit(0)
 		else:
