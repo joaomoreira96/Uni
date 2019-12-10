@@ -54,6 +54,7 @@ def main(PFILE, indexList=[int(0), int(1), int(-1)]):
 	vmsl, vkmhl = SE_3.velocityCounter(dposl, tdlist)
 	print(f"Total time taken:\n\t {tt} seconds\n\t {tt / 60} minutes\n\t {tt / 3600} hours")  # This is for testing
 	print(f"Total distance:\n\t {td} meters\n\t {td / 1000} kilometers")  # This is for testing
+	SE_3.workbookWriter(td, tt, tdlist, dposl, vkmhl)
 
 
 def menu():
